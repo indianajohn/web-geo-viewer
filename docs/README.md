@@ -10,6 +10,9 @@ with the appropriate mesh.
 
 This viewer doesn't upload any data at all. It's all done in the memory of the browser.
 
+Controls: click and drag rotates, shift-click and drag or right-click and drag translates,
+scroll wheel zooms in and out.
+
 Supported formats
 -----------------
 * OBJ files, MTL files. Load the OBJ, MTL, and any texture the MTL refers to via the
