@@ -450,7 +450,7 @@ pub fn update(model: &mut Model, msg: &Msg) -> ShouldRender {
                     match load_mtl(&mut &file.content[..]) {
                         Ok(materials) => {
                             for material in materials {
-                                info!("Loading material {}.", material.0);
+                                info!("Loading material {}: {:?}.", material.0, material.1);
                                 model.materials.insert(material.0, material.1);
                             }
                         }

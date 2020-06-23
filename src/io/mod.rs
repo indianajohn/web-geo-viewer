@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 /// We consider the specular and ambient
 /// colors to be properties of the scene
 /// lights, not the individual meshes.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Material {
     /// Diffuse color
     pub diffuse_color: three_d::Vec3,
