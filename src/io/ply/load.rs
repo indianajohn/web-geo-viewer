@@ -80,29 +80,6 @@ where
             load_binary::<BigReader, _, _, _>(read, mesh, &header, material_info, name)
         }
     };
-    /*
-    // Add face -> uv entries, assuming a unique UV per each element of
-    // each face (3 UVs per face).
-    if material_info.uv.len() == mesh.num_faces() * 3 {
-        let mut idx = 0;
-        // Just created this in this function, it has to be non-null
-        let surface = material_info.surfaces.get_mut(name).unwrap();
-        for face in surface.faces.iter() {
-            // There is a UV face that matches every face.
-            surface.uvs.insert(
-                face.clone(),
-                Face3 {
-                    a: VId { val: idx + 0 },
-                    b: VId { val: idx + 1 },
-                    c: VId { val: idx + 2 },
-                },
-            );
-            idx += 3;
-        }
-    } else if material_info.uv.len() != 0 {
-        return Err(PlyError::LoadVertexCountIncorrect);
-    }
-    */
     result
 }
 
