@@ -56,15 +56,16 @@ where
             }
         } else if line.starts_with(b"Kd ") {
             let mut words = to_words_skip_empty(line);
-            println!("Got Kd");
             // skip "Kd"
             words.next().ok_or(MtlError::LineParse(i_line))?;
             if let Some(mtl_name) = mtl_name.clone() {
                 if let Some(mtl) = result.get_mut(&mtl_name) {
-                    let x = words
-                        .next()
-                        .and_then(|w| from_ascii(w))
-                        .ok_or(MtlError::LineParse(i_line))?;
+                    let mut first_word = words.next().ok_or(MtlError::LineParse(i_line))?;
+                    // Skip "=" in some OBJ files
+                    if first_word == b"=" {
+                        first_word = words.next().ok_or(MtlError::LineParse(i_line))?;
+                    }
+                    let x = from_ascii(first_word).ok_or(MtlError::LineParse(i_line))?;
 
                     let y = words
                         .next()
