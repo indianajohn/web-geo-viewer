@@ -24,7 +24,7 @@ impl Material {
         Material {
             diffuse_color: three_d::Vec3::new(0.8, 0.8, 0.8),
             diffuse_intensity: 0.5,
-            specular_intensity: 20.0,
+            specular_intensity: 0.5,
             texture_name: None,
         }
     }
