@@ -3,6 +3,8 @@ web-geo-viewer
 This is a 3D renderer meant to be published to a static website, compiled in WASM. It
 arose from my annoyance at the absence of a free, simple PLY viewer online.
 
+See https://indianajohn.github.io/ for a live demo.
+
 Dependencies
 ------------
 wasmpack must be installed.

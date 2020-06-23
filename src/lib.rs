@@ -131,7 +131,7 @@ impl Component for Model {
                     { mesh_list::view_mesh_list(self) }
                 </td>
                 </tr></table>
-                <p>{"An "}<a href="https://github.com/indianajohn/web-geo-viewer/" target="_blank">{"open source project"}</a>{". See "} <a href="https://github.com/indianajohn/web-geo-viewer/tree/master/docs" target="_blank">{"the docs"}</a>{" for more info."}</p>
+                <p>{"Viewer for OBJ, PLY files, and more. An "}<a href="https://github.com/indianajohn/web-geo-viewer/" target="_blank">{"open source project"}</a>{". See "} <a href="https://github.com/indianajohn/web-geo-viewer/tree/master/docs" target="_blank">{"the docs"}</a>{" for more info."}</p>
             </div>
         }
     }
