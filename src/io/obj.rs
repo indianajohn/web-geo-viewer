@@ -22,6 +22,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //! Module for IO of the obj file format
 
+use log::*;
 use rust_3d::*;
 
 use std::{
@@ -174,22 +175,17 @@ where
                     }
                     // The second face of a quad.
                     if let Some(d) = maybe_d {
-                        mesh.try_add_connection(
-                            VId { val: a - 1 },
-                            VId { val: c - 1 },
-                            VId { val: d - 1 },
-                        )
-                        .or(Err(ObjError::InvalidMeshIndices(i_line)))?;
+                        let face = Face3 {
+                            a: VId { val: a - 1 },
+                            b: VId { val: c - 1 },
+                            c: VId { val: d - 1 },
+                        };
                         material_info
                             .surfaces
                             .get_mut(&mtl_name)
                             .unwrap()
                             .faces
-                            .insert(Face3 {
-                                a: VId { val: a - 1 },
-                                b: VId { val: c - 1 },
-                                c: VId { val: d - 1 },
-                            });
+                            .insert(face);
                     }
                     if let (Some(at), Some(ct), Some(d), Some(dt)) =
                         (maybe_at, maybe_ct, maybe_d, maybe_dt)
@@ -247,15 +243,30 @@ where
                     );
             }
             // obj indexing starts at 1
-            mesh.try_add_connection(VId { val: a - 1 }, VId { val: b - 1 }, VId { val: c - 1 })
-                .or(Err(ObjError::InvalidMeshIndices(i_line)))?;
-
             if let Some(_next) = words.next() {
                 return Err(ObjError::NotTriangularMesh(i_line));
             }
         }
     }
-
+    // Add all faces after vertices have already been added. This is
+    // in case there are multiple groups of vertices and faces; in that
+    // case it would be possible for the face to come before the vertex
+    // it references in the file.
+    for surface in &material_info.surfaces {
+        for face in &surface.1.faces {
+            match mesh.try_add_connection(face.a, face.b, face.c).or(Err(
+                ObjError::InvalidMeshIndices(face.a.val, face.b.val, face.c.val),
+            )) {
+                Ok(_) => {}
+                Err(_) => {
+                    info!(
+                        "Warning, face {},{},{} could not be added.",
+                        face.a.val, face.b.val, face.c.val
+                    );
+                }
+            }
+        }
+    }
     Ok(())
 }
 
@@ -305,7 +316,7 @@ where
 /// Error type for .obj file operations
 pub enum ObjError {
     AccessFile,
-    InvalidMeshIndices(usize),
+    InvalidMeshIndices(usize, usize, usize),
     LineParse(usize),
     NotTriangularMesh(usize),
 }
@@ -318,8 +329,8 @@ impl fmt::Debug for ObjError {
         match self {
             Self::AccessFile => write!(f, "Unable to access file"),
             Self::LineParse(x) => write!(f, "Unable to parse line {}", x),
-            Self::InvalidMeshIndices(x) => {
-                write!(f, "File contains invalid mesh indices on line {}", x)
+            Self::InvalidMeshIndices(x, y, z) => {
+                write!(f, "File contains invalid mesh indices: {}, {}, {}", x, y, z)
             }
             Self::NotTriangularMesh(x) => write!(
                 f,
