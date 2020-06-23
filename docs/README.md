@@ -8,6 +8,8 @@ one or more times. Enable and disable meshes by clicking the checkbox. Remove me
 clicking "remove." The viewer will do its best to associate textures and metadata files
 with the appropriate mesh.
 
+This viewer doesn't upload any data at all. It's all done in the memory of the browser.
+
 Supported formats
 -----------------
 * OBJ files, MTL files. Load the OBJ, MTL, and any texture the MTL refers to via the
