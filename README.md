@@ -10,6 +10,8 @@ Dependencies
 wasmpack must be installed.
 
 ```
+# You might have to run this once if you don't already have Nightly installed.
+rustup toolchain install nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly
 cargo install wasm-bindgen-cli
 ```
