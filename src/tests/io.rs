@@ -113,6 +113,8 @@ mod test {
         assert_eq!(m.num_vertices(), 5252);
         assert_eq!(m.num_faces(), 10200);
         assert_eq!(material_info.uv.len(), 3 * 10200);
+        assert_eq!(material_info.surfaces.len(), 1);
+        assert_eq!(material_info.surfaces.contains_key(&file_name), true);
         assert_eq!(material.texture_name.unwrap(), "capsule0.jpg");
     }
 
@@ -134,6 +136,8 @@ mod test {
         assert_eq!(m.num_vertices(), 5252);
         assert_eq!(m.num_faces(), 10200);
         assert_eq!(material_info.uv.len(), 3 * 10200);
+        assert_eq!(material_info.surfaces.len(), 1);
+        assert_eq!(material_info.surfaces.contains_key(&file_name), true);
         assert_eq!(material.texture_name.unwrap(), "capsule0.jpg");
     }
 }

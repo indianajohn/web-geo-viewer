@@ -519,18 +519,20 @@ where
                             from_ascii(b_bytes),
                             from_ascii(c_bytes),
                         ) {
+                            let face = Face3 {
+                                a: VId { val: a },
+                                b: VId { val: b },
+                                c: VId { val: c },
+                            };
                             material_info
                                 .surfaces
                                 .get_mut(name)
                                 .unwrap()
                                 .faces
-                                .insert(Face3 {
-                                    a: VId { val: a },
-                                    b: VId { val: b },
-                                    c: VId { val: c },
-                                });
-                            mesh.try_add_connection(VId { val: a }, VId { val: b }, VId { val: c })
+                                .insert(face.clone());
+                            mesh.try_add_connection(face.a, face.b, face.c)
                                 .or(Err(PlyError::InvalidMeshIndices(Some(*i_line))))?;
+                            idx_to_face.insert(*i_line, face);
                         }
                     } else {
                         return Err(PlyError::LineParse(*i_line));
@@ -573,7 +575,6 @@ where
                     );
                 }
             }
-            continue;
         }
         // If we've read both a face and a uv, add a link
         match idx_to_face.get(&i_line) {
