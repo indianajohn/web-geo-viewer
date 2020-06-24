@@ -24,28 +24,9 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 use rust_3d::*;
 
-use super::{
-    super::{byte_reader::*, utils::*},
-    types::*,
-};
+use super::{super::byte_reader::*, types::*};
 
 use std::io::Read;
-
-//------------------------------------------------------------------------------
-
-#[inline(always)]
-pub fn collect_index_line(line: &[u8]) -> Option<[usize; 3]> {
-    let mut words = to_words_skip_empty(line);
-    if words.next()? != b"3" {
-        return None;
-    }
-
-    let a = from_ascii(words.next()?)?;
-    let b = from_ascii(words.next()?)?;
-    let c = from_ascii(words.next()?)?;
-
-    Some([a, b, c])
-}
 
 //------------------------------------------------------------------------------
 

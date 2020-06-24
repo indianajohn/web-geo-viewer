@@ -115,4 +115,25 @@ mod test {
         assert_eq!(material_info.uv.len(), 3 * 10200);
         assert_eq!(material.texture_name.unwrap(), "capsule0.jpg");
     }
+
+    #[test]
+    fn load_textured_ascii_ply() {
+        let path = "src/tests/data/capsule-ascii.ply".to_string();
+        let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
+        let mut material = Material::new();
+        let mut material_info = MaterialInfo::new();
+        let file_name = "capsule.ply".to_string();
+        load_ply(
+            &mut BufReader::new(File::open(path).unwrap()),
+            &mut m,
+            &mut material,
+            &mut material_info,
+            &file_name,
+        )
+        .unwrap();
+        assert_eq!(m.num_vertices(), 5252);
+        assert_eq!(m.num_faces(), 10200);
+        assert_eq!(material_info.uv.len(), 3 * 10200);
+        assert_eq!(material.texture_name.unwrap(), "capsule0.jpg");
+    }
 }

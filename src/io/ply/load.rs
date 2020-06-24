@@ -451,6 +451,8 @@ where
     P: IsBuildable3D + Clone,
     R: BufRead,
 {
+    let mut idx_to_face: HashMap<usize, Face3> = HashMap::new();
+    let mut idx_to_uvs: HashMap<usize, Face3> = HashMap::new();
     while let Ok(line) = fetch_line(read, line_buffer) {
         *i_line += 1;
 
@@ -491,20 +493,101 @@ where
         }
 
         if header.n_faces > mesh.num_faces() {
-            let [a, b, c] = collect_index_line(&line).ok_or(PlyError::FaceStructure)?;
-            material_info
-                .surfaces
-                .get_mut(name)
-                .unwrap()
-                .faces
-                .insert(Face3 {
-                    a: VId { val: a },
-                    b: VId { val: b },
-                    c: VId { val: c },
-                });
-            mesh.try_add_connection(VId { val: a }, VId { val: b }, VId { val: c })
-                .or(Err(PlyError::InvalidMeshIndices(Some(*i_line))))?;
+            let mut words = to_words_skip_empty(&line);
+            for format in header.face_format.iter() {
+                if format.name == "vertex_indices" {
+                    // We expect 3 elements. Otherwise we don't know
+                    // how to handle these vertices.
+                    match words.next() {
+                        Some(word) => {
+                            if word != b"3" {
+                                return Err(PlyError::LineParse(*i_line));
+                            }
+                        }
+                        None => {
+                            return Err(PlyError::LineParse(*i_line));
+                        }
+                    }
+                    let maybe_a = words.next();
+                    let maybe_b = words.next();
+                    let maybe_c = words.next();
+                    if let (Some(a_bytes), Some(b_bytes), Some(c_bytes)) =
+                        (maybe_a, maybe_b, maybe_c)
+                    {
+                        if let (Some(a), Some(b), Some(c)) = (
+                            from_ascii(a_bytes),
+                            from_ascii(b_bytes),
+                            from_ascii(c_bytes),
+                        ) {
+                            material_info
+                                .surfaces
+                                .get_mut(name)
+                                .unwrap()
+                                .faces
+                                .insert(Face3 {
+                                    a: VId { val: a },
+                                    b: VId { val: b },
+                                    c: VId { val: c },
+                                });
+                            mesh.try_add_connection(VId { val: a }, VId { val: b }, VId { val: c })
+                                .or(Err(PlyError::InvalidMeshIndices(Some(*i_line))))?;
+                        }
+                    } else {
+                        return Err(PlyError::LineParse(*i_line));
+                    }
+                } else if format.name == "texcoord" {
+                    match words.next() {
+                        Some(word) => {
+                            // We expect 6 elements. Otherwise we don't
+                            // know how to handle this format of texcoord
+                            if word != b"6" {
+                                return Err(PlyError::LineParse(*i_line));
+                            }
+                        }
+                        None => {
+                            return Err(PlyError::LineParse(*i_line));
+                        }
+                    }
+                    let mut indices = vec![];
+                    for _ in 0..3 {
+                        indices.push(material_info.uv.len());
+                        let x = words
+                            .next()
+                            .and_then(|w| from_ascii(w))
+                            .ok_or(PlyError::LineParse(*i_line))?;
+
+                        let y = words
+                            .next()
+                            .and_then(|w| from_ascii(w))
+                            .ok_or(PlyError::LineParse(*i_line))?;
+                        let z = 1.0f64;
+                        material_info.uv.push_d(Point3D::new(x, y, z));
+                    }
+                    idx_to_face.insert(
+                        *i_line,
+                        Face3 {
+                            a: VId { val: indices[0] },
+                            b: VId { val: indices[1] },
+                            c: VId { val: indices[2] },
+                        },
+                    );
+                }
+            }
             continue;
+        }
+        // If we've read both a face and a uv, add a link
+        match idx_to_face.get(&i_line) {
+            Some(face) => match idx_to_uvs.get(&i_line) {
+                Some(uv_face) => {
+                    let surface = material_info.surfaces.get_mut(name).unwrap();
+                    surface.uvs.insert(face.clone(), uv_face.clone());
+                    // Remove it to save memory
+                    idx_to_face.remove(&i_line);
+                    idx_to_uvs.remove(&i_line);
+                }
+                None => {}
+            },
+            None => {}
         }
     }
 
