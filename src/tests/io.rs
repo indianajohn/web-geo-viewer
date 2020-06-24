@@ -18,7 +18,7 @@ mod test {
         assert_eq!(m.num_faces(), 12);
         assert_eq!(uv.uv.len(), 0);
         assert_eq!(uv.surfaces.contains_key("Default"), true);
-        assert_eq!(uv.surfaces.get("Default").unwrap().faces.len(), 0);
+        assert_eq!(uv.surfaces.get("Default").unwrap().faces.len(), 12);
     }
     #[test]
     fn load_textured_obj() {
