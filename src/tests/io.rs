@@ -7,54 +7,63 @@ mod test {
     fn load_untextured_obj() {
         let path = "src/tests/data/box.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
-        let mut uv = MaterialInfo::new();
+        let mut material_info = MaterialInfo::new();
         load_obj_mesh(
             &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
-            &mut uv,
+            &mut material_info,
         )
         .unwrap();
         assert_eq!(m.num_vertices(), 8);
         assert_eq!(m.num_faces(), 12);
-        assert_eq!(uv.uv.len(), 0);
-        assert_eq!(uv.surfaces.contains_key("Default"), true);
-        assert_eq!(uv.surfaces.get("Default").unwrap().faces.len(), 12);
+        assert_eq!(material_info.uv.len(), 0);
+        assert_eq!(material_info.surfaces.contains_key("Default"), true);
+        assert_eq!(
+            material_info.surfaces.get("Default").unwrap().faces.len(),
+            12
+        );
     }
     #[test]
     fn load_textured_obj() {
         let path = "src/tests/data/capsule.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
-        let mut uv = MaterialInfo::new();
+        let mut material_info = MaterialInfo::new();
         load_obj_mesh(
             &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
-            &mut uv,
+            &mut material_info,
         )
         .unwrap();
         assert_eq!(m.num_vertices(), 5252);
         assert_eq!(m.num_faces(), 10200);
-        assert_eq!(uv.uv.len(), 5252);
-        assert_eq!(uv.surfaces.contains_key("material0"), true);
-        assert_eq!(uv.surfaces.get("material0").unwrap().faces.len(), 10200);
-        assert_eq!(uv.material_libs.len(), 1);
-        assert_eq!(uv.material_libs.contains("capsule.mtl"), true);
+        assert_eq!(material_info.uv.len(), 5252);
+        assert_eq!(material_info.surfaces.contains_key("material0"), true);
+        assert_eq!(
+            material_info.surfaces.get("material0").unwrap().faces.len(),
+            10200
+        );
+        assert_eq!(material_info.material_libs.len(), 1);
+        assert_eq!(material_info.material_libs.contains("capsule.mtl"), true);
     }
     #[test]
     fn quad_mesh_works() {
         let path = "src/tests/data/box_quads.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
-        let mut uv = MaterialInfo::new();
+        let mut material_info = MaterialInfo::new();
         load_obj_mesh(
             &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
-            &mut uv,
+            &mut material_info,
         )
         .unwrap();
         assert_eq!(m.num_vertices(), 8);
         assert_eq!(m.num_faces(), 12);
-        assert_eq!(uv.uv.len(), 0);
-        assert_eq!(uv.surfaces.contains_key("Default"), true);
-        assert_eq!(uv.surfaces.get("Default").unwrap().faces.len(), 12);
+        assert_eq!(material_info.uv.len(), 0);
+        assert_eq!(material_info.surfaces.contains_key("Default"), true);
+        assert_eq!(
+            material_info.surfaces.get("Default").unwrap().faces.len(),
+            12
+        );
     }
 
     #[test]
@@ -87,7 +96,7 @@ mod test {
     }
 
     #[test]
-    fn load_textured_ply() {
+    fn load_textured_binary_ply() {
         let path = "src/tests/data/capsule.ply".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
         let mut material = Material::new();
