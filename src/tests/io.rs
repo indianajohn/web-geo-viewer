@@ -5,11 +5,11 @@ mod test {
     use std::{fs::File, io::BufReader};
     #[test]
     fn load_untextured_obj() {
-        let box_path = "src/tests/data/box.obj".to_string();
+        let path = "src/tests/data/box.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
         let mut uv = MaterialInfo::new();
         load_obj_mesh(
-            &mut BufReader::new(File::open(box_path).unwrap()),
+            &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
             &mut uv,
         )
@@ -22,11 +22,11 @@ mod test {
     }
     #[test]
     fn load_textured_obj() {
-        let box_path = "src/tests/data/capsule.obj".to_string();
+        let path = "src/tests/data/capsule.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
         let mut uv = MaterialInfo::new();
         load_obj_mesh(
-            &mut BufReader::new(File::open(box_path).unwrap()),
+            &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
             &mut uv,
         )
@@ -41,11 +41,11 @@ mod test {
     }
     #[test]
     fn quad_mesh_works() {
-        let box_path = "src/tests/data/box_quads.obj".to_string();
+        let path = "src/tests/data/box_quads.obj".to_string();
         let mut m = rust_3d::Mesh3D::<Point3D, PointCloud3D<Point3D>, Vec<usize>>::default();
         let mut uv = MaterialInfo::new();
         load_obj_mesh(
-            &mut BufReader::new(File::open(box_path).unwrap()),
+            &mut BufReader::new(File::open(path).unwrap()),
             &mut m,
             &mut uv,
         )
